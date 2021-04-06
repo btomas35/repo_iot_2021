@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+<script type="text/javascript">
+	var url="http://restcountries.eu/rest/v2/all";
+	var con=new XMLHttpRequest();
+	var arrayPaises;
+	function cargarPaises(){		
+		con.open("GET",url,true); //configuración de la petición
+		con.onreadystatechange=procesarRespuesta; //indicamos la función de retrollamada
+		con.send(null);//lanzamos la petición, indicando que el cuerpo de la petición está vacío
+	}
+	function procesarRespuesta(){
+		if(con.readyState==4){
+			
+			let lista=document.getElementById("listaNombres");
+			arrayPaises=JSON.parse(con.responseText); //guardamos en una variable, el array de paises obtenidos
+			let opcion="";
+			for(let ob of arrayPaises){
+				opcion+="<option value='"+ob.name+"'>"+ob.name+"</option>"
+			}
+			//se vuelcan las opciones generadas dentro del <select>
+			lista.innerHTML+=opcion;
+		}
+	}
+	function datosPais(){
+		let nombreSeleccionado=document.getElementById("listaNombres").value;
+		//referencia al div donde presentamos los datos
+		let resultado=document.getElementById("datosPais");
+		let html;
+		for(let pais of arrayPaises){
+			if(pais.name==nombreSeleccionado){//si encontramos el país seleccionado, mostramos sus datos en el div
+				html="<h2>País: "+pais.name+"</h2>";
+				html+="<h2>Capital: "+pais.capital+"</h2>";
+				html+="<h2>Habitantes: "+pais.population+"</h2>";
+				html+="<img width='100' heigth='150' src='"+pais.flag+"'/>";
+				break;
+			}
+		}
+		resultado.innerHTML=html;
+	}
+
+	function visualizar(){
+		var bt=document.getElementById("boton");
+		bt.style.visibility="visible";
+	}
+</script>
+
+
+</head>
+<body onload="cargarPaises();">
+<div class="container-fluid" align="center">
+	<h1>Informacion Paises</h1>
+	<select id="listaNombres" onchange="visualizar();">
+		<option>-Seleccione Pais-</option>
+	</select>
+	<br/><br/>
+	<input id="boton" type="button" style="visibility:hidden" value="Ver datos" onclick="datosPais();">
+	<br/><br/>
+	<div id="datosPais">
+	
+	
+	</div>
+
+</div>
+</body>
+</html>
